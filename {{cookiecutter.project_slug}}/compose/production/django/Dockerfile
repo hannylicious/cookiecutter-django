@@ -42,9 +42,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 # Requirements are installed here to ensure they will be cached.
 RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --locked --no-install-project --no-dev
+  --mount=type=bind,source=uv.lock,target=uv.lock \
+  --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+  uv sync --locked --no-install-project --no-dev
 {%- if cookiecutter.frontend_pipeline in ['Gulp', 'Webpack'] %}
 COPY --from=client-builder ${APP_HOME} ${APP_HOME}
 {% else %}
@@ -52,9 +52,9 @@ COPY . ${APP_HOME}
 {%- endif %}
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --locked --no-dev
+  --mount=type=bind,source=uv.lock,target=uv.lock \
+  --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+  uv sync --locked --no-dev
 
 # Python 'run' stage
 FROM python:3.12-slim-bookworm AS python-run-stage
@@ -89,22 +89,6 @@ COPY --chown=django:django ./compose/production/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
-
-{%- if cookiecutter.use_celery == "y" %}
-COPY --chown=django:django ./compose/production/django/celery/worker/start /start-celeryworker
-RUN sed -i 's/\r$//g' /start-celeryworker
-RUN chmod +x /start-celeryworker
-
-
-COPY --chown=django:django ./compose/production/django/celery/beat/start /start-celerybeat
-RUN sed -i 's/\r$//g' /start-celerybeat
-RUN chmod +x /start-celerybeat
-
-
-COPY --chown=django:django ./compose/production/django/celery/flower/start /start-flower
-RUN sed -i 's/\r$//g' /start-flower
-RUN chmod +x /start-flower
-{%- endif %}
 
 # Copy the application from the builder
 COPY --from=python-build-stage --chown=django:django ${APP_HOME} ${APP_HOME}

@@ -15,13 +15,6 @@ redis==6.4.0  # https://github.com/redis/redis-py
 {%- if cookiecutter.use_docker == "y" or cookiecutter.windows == "n" %}
 hiredis==3.2.1  # https://github.com/redis/hiredis-py
 {%- endif %}
-{%- if cookiecutter.use_celery == "y" %}
-celery==5.5.3  # pyup: < 6.0  # https://github.com/celery/celery
-django-celery-beat==2.8.1  # https://github.com/celery/django-celery-beat
-{%- if cookiecutter.use_docker == 'y' %}
-flower==2.0.1  # https://github.com/mher/flower
-{%- endif %}
-{%- endif %}
 {%- if cookiecutter.use_async == 'y' %}
 uvicorn[standard]==0.35.0  # https://github.com/encode/uvicorn
 uvicorn-worker==0.3.0  # https://github.com/Kludex/uvicorn-worker

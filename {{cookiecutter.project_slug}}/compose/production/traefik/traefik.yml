@@ -14,12 +14,6 @@ entryPoints:
   web-secure:
     # https
     address: ':443'
-  {%- if cookiecutter.use_celery == 'y' %}
-
-  flower:
-    address: ':5555'
-  {%- endif %}
-
 certificatesResolvers:
   letsencrypt:
     # https://doc.traefik.io/traefik/https/acme/#lets-encrypt
@@ -46,17 +40,6 @@ http:
       tls:
         # https://doc.traefik.io/traefik/routing/routers/#certresolver
         certResolver: letsencrypt
-    {%- if cookiecutter.use_celery == 'y' %}
-
-    flower-secure-router:
-      rule: 'Host(`{{ cookiecutter.domain_name }}`)'
-      entryPoints:
-        - flower
-      service: flower
-      tls:
-        # https://doc.traefik.io/traefik/master/routing/routers/#certresolver
-        certResolver: letsencrypt
-    {%- endif %}
     {%- if cookiecutter.cloud_provider == 'None' %}
 
     web-media-router:
@@ -86,13 +69,6 @@ http:
       loadBalancer:
         servers:
           - url: http://django:5000
-    {%- if cookiecutter.use_celery == 'y' %}
-
-    flower:
-      loadBalancer:
-        servers:
-          - url: http://flower:5555
-    {%- endif %}
     {%- if cookiecutter.cloud_provider == 'None' %}
 
     django-media:

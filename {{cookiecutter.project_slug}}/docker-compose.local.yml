@@ -1,10 +1,9 @@
 volumes:
   {{ cookiecutter.project_slug }}_local_postgres_data: {}
   {{ cookiecutter.project_slug }}_local_postgres_data_backups: {}
-  {% if cookiecutter.use_celery == 'y' %}{{ cookiecutter.project_slug }}_local_redis_data: {}{% endif %}
 
 services:
-  django:{% if cookiecutter.use_celery == 'y' %} &django{% endif %}
+  django:
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
@@ -12,9 +11,6 @@ services:
     container_name: {{ cookiecutter.project_slug }}_local_django
     depends_on:
       - postgres
-      {%- if cookiecutter.use_celery == 'y' %}
-      - redis
-      {%- endif %}
       {%- if cookiecutter.use_mailpit == 'y' %}
       - mailpit
       {%- endif %}
@@ -47,49 +43,6 @@ services:
     container_name: {{ cookiecutter.project_slug }}_local_mailpit
     ports:
       - "8025:8025"
-
-  {%- endif %}
-  {%- if cookiecutter.use_celery == 'y' %}
-
-  redis:
-    image: docker.io/redis:6
-    container_name: {{ cookiecutter.project_slug }}_local_redis
-    volumes:
-      - {{ cookiecutter.project_slug }}_local_redis_data:/data
-
-  celeryworker:
-    <<: *django
-    image: {{ cookiecutter.project_slug }}_local_celeryworker
-    container_name: {{ cookiecutter.project_slug }}_local_celeryworker
-    depends_on:
-      - redis
-      - postgres
-      {%- if cookiecutter.use_mailpit == 'y' %}
-      - mailpit
-      {%- endif %}
-    ports: []
-    command: /start-celeryworker
-
-  celerybeat:
-    <<: *django
-    image: {{ cookiecutter.project_slug }}_local_celerybeat
-    container_name: {{ cookiecutter.project_slug }}_local_celerybeat
-    depends_on:
-      - redis
-      - postgres
-      {%- if cookiecutter.use_mailpit == 'y' %}
-      - mailpit
-      {%- endif %}
-    ports: []
-    command: /start-celerybeat
-
-  flower:
-    <<: *django
-    image: {{ cookiecutter.project_slug }}_local_flower
-    container_name: {{ cookiecutter.project_slug }}_local_flower
-    ports:
-      - '5555:5555'
-    command: /start-flower
 
   {%- endif %}
   {%- if cookiecutter.frontend_pipeline in ['Gulp', 'Webpack'] %}

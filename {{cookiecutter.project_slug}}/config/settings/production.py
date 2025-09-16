@@ -4,10 +4,6 @@ import logging
 
 import sentry_sdk
 
-{%- if cookiecutter.use_celery == 'y' %}
-from sentry_sdk.integrations.celery import CeleryIntegration
-
-{%- endif %}
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
@@ -418,16 +414,7 @@ sentry_logging = LoggingIntegration(
     event_level=logging.ERROR,  # Send errors as events
 )
 
-{%- if cookiecutter.use_celery == 'y' %}
-integrations = [
-    sentry_logging,
-    DjangoIntegration(),
-    CeleryIntegration(),
-    RedisIntegration(),
-]
-{% else %}
 integrations = [sentry_logging, DjangoIntegration(), RedisIntegration()]
-{% endif -%}
 
 sentry_sdk.init(
     dsn=SENTRY_DSN,

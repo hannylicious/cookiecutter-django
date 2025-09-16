@@ -102,18 +102,6 @@ if env("USE_DOCKER") == "yes":
 # ------------------------------------------------------------------------------
 # https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
 INSTALLED_APPS += ["django_extensions"]
-{% if cookiecutter.use_celery == 'y' -%}
-
-# Celery
-# ------------------------------------------------------------------------------
-{% if cookiecutter.use_docker == 'n' -%}
-# https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-always-eager
-CELERY_TASK_ALWAYS_EAGER = True
-{%- endif %}
-# https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-eager-propagates
-CELERY_TASK_EAGER_PROPAGATES = True
-
-{%- endif %}
 {%- if cookiecutter.frontend_pipeline == 'Webpack' %}
 # django-webpack-loader
 # ------------------------------------------------------------------------------

@@ -22,16 +22,16 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 # Requirements are installed here to ensure they will be cached.
 RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    --mount=type=bind,source=uv.lock,target=uv.lock:rw \
-    uv sync --no-install-project
+  --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+  --mount=type=bind,source=uv.lock,target=uv.lock:rw \
+  uv sync --no-install-project
 
 COPY . ${APP_HOME}
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    --mount=type=bind,source=uv.lock,target=uv.lock:rw \
-    uv sync
+  --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+  --mount=type=bind,source=uv.lock,target=uv.lock:rw \
+  uv sync
 
 # devcontainer dependencies and utils
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -53,19 +53,5 @@ RUN chmod +x /entrypoint
 COPY ./compose/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
-
-{% if cookiecutter.use_celery == "y" %}
-COPY ./compose/local/django/celery/worker/start /start-celeryworker
-RUN sed -i 's/\r$//g' /start-celeryworker
-RUN chmod +x /start-celeryworker
-
-COPY ./compose/local/django/celery/beat/start /start-celerybeat
-RUN sed -i 's/\r$//g' /start-celerybeat
-RUN chmod +x /start-celerybeat
-
-COPY ./compose/local/django/celery/flower/start /start-flower
-RUN sed -i 's/\r$//g' /start-flower
-RUN chmod +x /start-flower
-{% endif %}
 
 ENTRYPOINT ["/entrypoint"]
